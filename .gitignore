@@ -10,3 +10,4 @@
 ./bin
 DockerHelp
 runRedis
+./redis-data
