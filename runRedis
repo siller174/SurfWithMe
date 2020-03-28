@@ -1,0 +1,5 @@
+docker run -p 6379:6379 -d                  \
+	-e ALLOW_EMPTY_PASSWORD=yes \
+    	-v $PWD/redis-data:/bitnami/redis/data  \
+    	--name redis_cont                       \
+    	bitnami/redis:latest
