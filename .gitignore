@@ -8,5 +8,5 @@
 *.iml
 *.log
 ./bin
-./DockerHelp
-./runRedis
+DockerHelp
+runRedis
