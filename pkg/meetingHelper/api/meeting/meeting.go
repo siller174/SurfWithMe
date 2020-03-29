@@ -2,14 +2,15 @@ package meeting
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"github.com/siller174/meetingHelper/pkg/logger"
+	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
+	"github.com/siller174/meetingHelper/pkg/utils/converter"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"
 	"github.com/siller174/meetingHelper/pkg/utils/http/response"
 	"net/http"
-
-	"github.com/gorilla/mux"
-	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 )
 
 const api = "/api/v1/meeting"
@@ -22,8 +23,8 @@ const RouteDelete = api
 func Create(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		meeting := service.Create()
-		writeMeetingResponse(w, r, meeting)
-
+		logger.Debug("Create %v+", meeting)
+		writeMeetingResponse(w, *meeting)
 	}
 }
 
@@ -33,8 +34,13 @@ func Get(service *service.MeetingService) func(w http.ResponseWriter, r *http.Re
 		if meeting == nil {
 			return
 		}
-		result := service.Get(*meeting)
-		writeMeetingResponse(w, r, result)
+		result, err := service.Get(meeting)
+		if err != nil {
+			handler.Handle(w, err)
+			return
+		}
+		logger.Debug("Get %v+", meeting)
+		writeMeetingResponse(w, *result)
 	}
 }
 
@@ -44,14 +50,28 @@ func Put(service *service.MeetingService) func(w http.ResponseWriter, r *http.Re
 		if meeting == nil {
 			return
 		}
-		service.Put(*meeting)
+		meeting.SetTime()
+		err := service.Put(meeting)
+		if err != nil {
+			handler.Handle(w, err)
+		}
+		logger.Debug("Put %v+", meeting)
 		response.Empty(w)
 	}
 }
 
 func History(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		meeting := decodeMeeting(w, r)
+		if meeting == nil {
+			return
+		}
+		history, err := service.History(meeting)
+		if err != nil {
+			handler.Handle(w, err)
+		}
+		meetingJSON, err := converter.StructToJsonByte(history)
+		err = response.WriteJSON(w, http.StatusOK, meetingJSON)
 	}
 }
 
@@ -61,17 +81,18 @@ func Delete(service *service.MeetingService) func(w http.ResponseWriter, r *http
 		if meeting == nil {
 			return
 		}
-		service.Delete(*meeting)
+		service.Delete(meeting)
+		logger.Debug("Delete %v+", meeting)
 		response.Empty(w)
 	}
 }
 
-func writeMeetingResponse(w http.ResponseWriter, r *http.Request, meeting structs.Meeting) {
-	bytes, err := json.Marshal(meeting)
+func writeMeetingResponse(w http.ResponseWriter, meeting structs.Meeting) {
+	meetingJSON, err := converter.StructToJsonByte(meeting)
 	if err != nil {
-		handler.Handle(w, errors.NewInternalErr(err))
+		handler.Handle(w, err)
 	}
-	err = response.WriteJSON(w, http.StatusOK, bytes)
+	err = response.WriteJSON(w, http.StatusOK, meetingJSON)
 }
 
 func decodeMeeting(w http.ResponseWriter, r *http.Request) *structs.Meeting {

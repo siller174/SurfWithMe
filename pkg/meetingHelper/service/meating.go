@@ -1,10 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"github.com/rs/xid"
-	"github.com/siller174/meetingHelper/pkg/logger"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/repository"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
+	"github.com/siller174/meetingHelper/pkg/utils/converter"
 )
 
 type MeetingService struct {
@@ -17,36 +18,61 @@ func NewMeetingService(repos repository.RedisRepo) *MeetingService {
 	}
 }
 
-func (ms *MeetingService) Create() structs.Meeting {
+func (ms *MeetingService) Create() *structs.Meeting {
 	meeting := structs.Meeting{
 		ID: generateID(),
 	}
-	logger.Debug("Create %+v", meeting)
-	return meeting
+	return &meeting
+
 }
 
-func (ms *MeetingService) Put(meeting structs.Meeting) {
-	//todo put to redis
-	logger.Debug("Put %+v", meeting)
+func (ms *MeetingService) Put(meeting *structs.Meeting) error {
+	meetingJson, err := converter.StructToJsonString(meeting)
+	if err != nil {
+		return err
+	}
+	err = ms.repository.Put(meeting.ID, meetingJson)
+	return err
 }
 
-func (ms *MeetingService) Get(meeting structs.Meeting) structs.Meeting {
-	//todo get from redis last url and time
-	logger.Debug("Get %+v", meeting)
-	return meeting
+func (ms *MeetingService) Get(meeting *structs.Meeting) (*structs.Meeting, error) {
+	resultMeeting := structs.Meeting{}
+	meetingJson, err := ms.repository.Get(meeting.ID)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal([]byte(*meetingJson), &resultMeeting)
+	if err != nil {
+		return nil, err
+	}
+	return &resultMeeting, nil
 }
 
-func (ms *MeetingService) Delete(meeting structs.Meeting) {
+func (ms *MeetingService) History(meeting *structs.Meeting) (*[]structs.Meeting, error) {
+	history, err := ms.repository.History(meeting.ID)
+	if err != nil {
+		return nil, err
+	}
+	historyMeetings := make([]structs.Meeting, len(*history))
+
+	for _, meetingJson := range *history {
+		tempMeeting := structs.Meeting{}
+		err = json.Unmarshal([]byte(meetingJson), &tempMeeting)
+		if err != nil {
+			return nil, err
+		}
+		historyMeetings = append(historyMeetings, tempMeeting)
+	}
+	return &historyMeetings, nil
+}
+
+
+func (ms *MeetingService) Delete(meeting *structs.Meeting) {
 	//todo remove meeting from redis
-	logger.Debug("Delete %+v", meeting)
+	//ms.repository.Delete(meeting)
 
 }
 
-// func (ms *MeetingService) History(meeting structs.Meeting) []structs.Meeting { TODO
-func (ms *MeetingService) History(meeting structs.Meeting) {
-	//todo get all urls from redis
-	logger.Debug("Gey history %+v", meeting)
-}
 
 func generateID() string {
 	guid := xid.New()

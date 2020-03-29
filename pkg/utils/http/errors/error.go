@@ -1,6 +1,9 @@
 package errors
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 type HTTPError interface {
 	Error() string
@@ -22,26 +25,26 @@ func (err *Errors) GetStatus() int {
 }
 
 func (err *Errors) ToResponse() string {
-	return fmt.Sprintf("{ Error:\"%s\" }", err.Err.Error())
-}
-
-func NewRequestTimeout(err error) *Errors {
-	return &Errors{
-		Err:    err,
-		Status: 408,
-	}
+	return fmt.Sprintf("{\nError:\"%s\"\n}", err.Err.Error())
 }
 
 func NewBadRequest(err error) *Errors {
 	return &Errors{
 		Err:    err,
-		Status: 400,
+		Status: http.StatusBadRequest,
 	}
 }
 
 func NewInternalErr(err error) *Errors {
 	return &Errors{
 		Err:    err,
-		Status: 500,
+		Status: http.StatusInternalServerError,
+	}
+}
+
+func NewNotFound(err error) *Errors {
+	return &Errors{
+		Err:    err,
+		Status: http.StatusNotFound,
 	}
 }
