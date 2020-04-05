@@ -54,6 +54,7 @@ func Put(service *service.MeetingService) func(w http.ResponseWriter, r *http.Re
 		err := service.Put(meeting)
 		if err != nil {
 			handler.Handle(w, err)
+			return
 		}
 		logger.Debug("Put %v+", meeting)
 		response.Empty(w)
@@ -69,6 +70,7 @@ func History(service *service.MeetingService) func(w http.ResponseWriter, r *htt
 		history, err := service.History(meeting)
 		if err != nil {
 			handler.Handle(w, err)
+			return
 		}
 		meetingJSON, err := converter.StructToJsonByte(history)
 		err = response.WriteJSON(w, http.StatusOK, meetingJSON)

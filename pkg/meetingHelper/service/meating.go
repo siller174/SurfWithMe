@@ -9,10 +9,10 @@ import (
 )
 
 type MeetingService struct {
-	repository repository.RedisRepo
+	repository repository.KeyListMapper
 }
 
-func NewMeetingService(repos repository.RedisRepo) *MeetingService {
+func NewMeetingService(repos repository.KeyListMapper) *MeetingService {
 	return &MeetingService{
 		repository: repos,
 	}
@@ -37,7 +37,7 @@ func (ms *MeetingService) Put(meeting *structs.Meeting) error {
 
 func (ms *MeetingService) Get(meeting *structs.Meeting) (*structs.Meeting, error) {
 	resultMeeting := structs.Meeting{}
-	meetingJson, err := ms.repository.Get(meeting.ID)
+	meetingJson, err := ms.repository.GetLast(meeting.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (ms *MeetingService) Get(meeting *structs.Meeting) (*structs.Meeting, error
 }
 
 func (ms *MeetingService) History(meeting *structs.Meeting) (*[]structs.Meeting, error) {
-	history, err := ms.repository.History(meeting.ID)
+	history, err := ms.repository.GetAll(meeting.ID)
 	if err != nil {
 		return nil, err
 	}
