@@ -9,9 +9,10 @@ import (
 )
 
 type App struct {
-	Log    logger.Logger
-	Server Server
-	Redis  Redis
+	DevMode bool
+	Log     logger.Logger
+	Server  Server
+	Redis   Redis
 }
 
 func New(configPath string) App {

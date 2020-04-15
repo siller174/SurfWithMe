@@ -22,3 +22,7 @@ func WriteJSON(w http.ResponseWriter, code int, message []byte) error {
 func Empty(w http.ResponseWriter)  {
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func NotFound(w http.ResponseWriter)  {
+	w.WriteHeader(http.StatusNotFound)
+}

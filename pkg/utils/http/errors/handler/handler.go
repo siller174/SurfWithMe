@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+const addErrorToResponse = true
+
 func Handle(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
@@ -26,9 +28,11 @@ func Handle(w http.ResponseWriter, err error) {
 	}
 	logger.Error(err.Error())
 
-	innerErr = response.WriteJSON(w, status, []byte(res))
+	if addErrorToResponse {
+		innerErr = response.WriteJSON(w, status, []byte(res))
 
-	if innerErr != nil {
-		logger.Error(err.Error())
+		if innerErr != nil {
+			logger.Error(err.Error())
+		}
 	}
 }
