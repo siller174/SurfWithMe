@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	configPath := pflag.String("config-path", ".", "Path to config file")
+	configPath := pflag.String("config-path", "./meetingHelper.properties", "Path to config file")
 	pflag.Parse()
 	appConfig := config.New(*configPath)
 	server := api.New(appConfig)
