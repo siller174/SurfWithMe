@@ -17,6 +17,6 @@ WORKDIR     /opt/
 COPY        --from=build /meetingbuild/bin/meetingHelper /opt/
 COPY        --from=build /meetingbuild/configs/meetingHelper/meetingHelper.properties /opt
 
-ENTRYPOINT ["./opt/meetingHelper --c"]
+ENTRYPOINT ["./opt/meetingHelper"]
 
 EXPOSE      8080
