@@ -10,7 +10,7 @@ RUN         apk update && apk add --no-cache git
 
 RUN         go install /meetingbuild/cmd/...
 
-WORKDIR     /opt/
+WORKDIR     /opt/meetingHelper
 FROM		golang:1.13-alpine3.10
 
 COPY        --from=build /meetingbuild/bin/meetingHelper /opt/meetingHelper
