@@ -8,7 +8,7 @@ ADD         . /build
 
 RUN         apk update && apk add --no-cache git
 
-RUN         go install -mod=vendor /meetingbuild/cmd/...
+RUN         go install /meetingbuild/cmd/...
 
 WORKDIR     /opt/
 FROM		golang:1.13-alpine3.10
