@@ -4,7 +4,7 @@ WORKDIR     /meetingbuild
 
 ENV         GOBIN=/meetingbuild/bin
 
-ADD         . /build
+ADD         . /meetingbuild
 
 RUN         apk update && apk add --no-cache git
 
