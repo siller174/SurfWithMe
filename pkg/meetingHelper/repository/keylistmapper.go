@@ -22,7 +22,7 @@ func (repo *KeyListMapper) Put(key string, value string) error {
 	put := repo.redisClient.RPush(key, value)
 	i, err := put.Result()
 	if err != nil {
-		return err
+		return errors.NewInternalErr(err)
 	}
 	logger.Debug("Put key %v value %v. Success. Return %v", key, value, i)
 	return nil
@@ -33,7 +33,7 @@ func (repo *KeyListMapper) GetLast(key string) (*string, error) {
 	get := repo.redisClient.LRange(key, -1, -1)
 	meetingJson, err := get.Result()
 	if err != nil {
-		return nil, err
+		return nil, errors.NewInternalErr(err)
 	}
 	if len(meetingJson) < 1 {
 		return nil, errors.NewNotFound(fmt.Errorf("get values from %v not found", key))
@@ -47,7 +47,7 @@ func (repo *KeyListMapper) GetAll(key string) (*[]string, error) {
 	lRange := repo.redisClient.LRange(key, 0, -1)
 	meetingJson, err := lRange.Result()
 	if err != nil {
-		return nil, err
+		return nil, errors.NewInternalErr(err)
 	}
 	if len(meetingJson) < 1 {
 		return nil, errors.NewNotFound(fmt.Errorf("history from %v not found", key))

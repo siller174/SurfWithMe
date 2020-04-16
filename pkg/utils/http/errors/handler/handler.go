@@ -7,9 +7,17 @@ import (
 	"net/http"
 )
 
-const addErrorToResponse = true
+type Handler struct {
+	devMode bool
+}
 
-func Handle(w http.ResponseWriter, err error) {
+func NewHandler(devMode bool) *Handler {
+	return &Handler{
+		devMode:devMode,
+	}
+}
+
+func (handler *Handler) Handle(w http.ResponseWriter, err error) {
 	if err == nil {
 		return
 	}
@@ -28,7 +36,7 @@ func Handle(w http.ResponseWriter, err error) {
 	}
 	logger.Error(err.Error())
 
-	if addErrorToResponse {
+	if handler.devMode {
 		innerErr = response.WriteJSON(w, status, []byte(res))
 
 		if innerErr != nil {

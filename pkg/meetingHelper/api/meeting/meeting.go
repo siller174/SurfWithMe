@@ -1,13 +1,12 @@
 package meeting
 
 import (
-	"encoding/json"
-	"github.com/gorilla/mux"
+	"github.com/gorilla/context"
 	"github.com/siller174/meetingHelper/pkg/logger"
+	"github.com/siller174/meetingHelper/pkg/meetingHelper"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
 	"github.com/siller174/meetingHelper/pkg/utils/converter"
-	"github.com/siller174/meetingHelper/pkg/utils/http/errors"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"
 	"github.com/siller174/meetingHelper/pkg/utils/http/response"
 	"net/http"
@@ -21,152 +20,112 @@ const RouteHistory = api + "/history"
 const RouteDelete = api
 const RouteOptions = api
 
-func Create(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-		meeting, err := service.Create()
-		if err != nil || meeting == nil {
-			handler.Handle(w, err)
-			return
-		}
-		logger.Debug("Create %v+", meeting)
-		writeMeetingResponse(w, *meeting)
+type Meeting struct {
+	service      *service.MeetingService
+	errorHandler *handler.Handler
+}
+
+func NewMeetingApi(service *service.MeetingService, errorHandler *handler.Handler) *Meeting {
+	return &Meeting{
+		service:      service,
+		errorHandler: errorHandler,
 	}
 }
 
-func Get(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
+func (meeting *Meeting) Create() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		meeting := decodeMeeting(w, r)
-		if meeting == nil {
-			return
-		}
-
-		isMember := isMember(w, service, meeting)
-		if !isMember {
-			return
-		}
-
-		result, err := service.Get(meeting)
+		mtg, err := meeting.service.Create()
 		if err != nil {
-			handler.Handle(w, err)
+			meeting.errorHandler.Handle(w, err)
 			return
 		}
-		logger.Debug("Get %v+", meeting)
-		writeMeetingResponse(w, *result)
+		logger.Debug("Create %v+", mtg)
+		writeMeetingResponse(w, r, *mtg)
 	}
 }
 
-func Put(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
+func (meeting *Meeting) Get() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		meeting := decodeMeeting(w, r)
-		if meeting == nil {
-			return
-		}
-
-		isMember := isMember(w, service, meeting)
-		if !isMember {
-			return
-		}
-
-		meeting.SetTime()
-		err := service.Put(meeting)
+		mtg := getMeeting(r)
+		mtg, err := meeting.service.Get(mtg)
 		if err != nil {
-			handler.Handle(w, err)
+			meeting.errorHandler.Handle(w, err)
 			return
 		}
-		logger.Debug("Put %v+", meeting)
+		logger.Debug("Get %v+", mtg)
+		writeMeetingResponse(w, r, *mtg)
+	}
+}
+
+func (meeting *Meeting) Put() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		mtg := getMeeting(r)
+		mtg.SetTime()
+		err := meeting.service.Put(mtg)
+		if err != nil {
+			meeting.errorHandler.Handle(w, err)
+			return
+		}
+		logger.Debug("Put %v+", mtg)
 		response.Empty(w)
 	}
 }
 
-func IsMember(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
+func (meeting *Meeting) IsMember() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		meeting := decodeMeeting(w, r)
-		if meeting == nil {
-			return
-		}
-		isMember := isMember(w, service, meeting)
-		if isMember {
+		meeting := getMeeting(r)
+		if meeting != nil {
 			response.Empty(w)
 		}
 	}
 }
 
-func History(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
+func (meeting *Meeting) History() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		meeting := decodeMeeting(w, r)
-		if meeting == nil {
-			return
-		}
-		history, err := service.History(meeting)
+		mtg := getMeeting(r)
+		history, err := meeting.service.History(mtg)
 		if err != nil {
-			handler.Handle(w, err)
+			meeting.errorHandler.Handle(w, err)
 			return
 		}
 		meetingJSON, err := converter.StructToJsonByte(history)
-		err = response.WriteJSON(w, http.StatusOK, meetingJSON)
+		response.WriteJSON(w, http.StatusOK, meetingJSON)
 	}
 }
 
-func Delete(service *service.MeetingService) func(w http.ResponseWriter, r *http.Request) {
+func (meeting *Meeting) Delete() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		meeting := decodeMeeting(w, r)
-		if meeting == nil {
-			return
-		}
-
-		isMember := isMember(w, service, meeting)
-		if !isMember {
-			return
-		}
-
-		err := service.Delete(meeting)
+		mtg := getMeeting(r)
+		err := meeting.service.Delete(mtg)
 		if err != nil {
-			handler.Handle(w, err)
+			meeting.errorHandler.Handle(w, err)
 			return
 		}
-		logger.Debug("Delete %v+", meeting)
+		logger.Debug("Delete %v+", mtg)
 		response.Empty(w)
 	}
 }
 
-func isMember(w http.ResponseWriter, service *service.MeetingService, meeting *structs.Meeting) bool {
-	isMember, err := service.IsMember(meeting)
-	if err != nil {
-		handler.Handle(w, err)
-		return false
+func getMeeting(r *http.Request) *structs.Meeting {
+	if rv := context.Get(r, meetingHelper.UnitContext); rv != nil {
+		return rv.(*structs.Meeting)
 	}
-	if !isMember {
-		response.NotFound(w)
-		return false
-	}
-	return true
+	return nil
 }
 
-func writeMeetingResponse(w http.ResponseWriter, meeting structs.Meeting) {
+func writeMeetingResponse(w http.ResponseWriter, r *http.Request, meeting structs.Meeting) {
 	meetingJSON, err := converter.StructToJsonByte(meeting)
 	if err != nil {
-		handler.Handle(w, err)
+		logger.Error("Could not write meeting %v to response", meeting)
 	}
 	err = response.WriteJSON(w, http.StatusOK, meetingJSON)
-}
-
-func decodeMeeting(w http.ResponseWriter, r *http.Request) *structs.Meeting {
-	var meeting structs.Meeting
-	err := json.NewDecoder(r.Body).Decode(&meeting)
 	if err != nil {
-		handler.Handle(w, errors.NewBadRequest(err))
-		return nil
+		logger.Error("Could not write meeting %v to response", meeting)
 	}
-	return &meeting
-}
-
-func getMeetingID(r *http.Request) string {
-	vars := mux.Vars(r)
-	return vars["meetingID"]
 }

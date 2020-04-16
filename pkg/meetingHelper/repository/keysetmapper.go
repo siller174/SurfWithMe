@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/go-redis/redis"
 	"github.com/siller174/meetingHelper/pkg/logger"
+	"github.com/siller174/meetingHelper/pkg/utils/http/errors"
 )
 
 type KeySetMapper struct {
@@ -19,9 +20,13 @@ func (repo *KeySetMapper) IsMember(key string, value string) (bool, error) {
 	res := repo.redisClient.SIsMember(key, value)
 	isMember, err := res.Result()
 	if err != nil {
-		return false, err
+		return false, errors.NewInternalErr(err)
 	}
-	logger.Debug("Set %v contain %v.", key, value)
+	if isMember {
+		logger.Debug("Set %v contain %v.", key, value)
+	} else {
+		logger.Debug("Set %v is not contain %v.", key, value)
+	}
 	return isMember, nil
 }
 
@@ -30,7 +35,7 @@ func (repo *KeySetMapper) Add(key string, value string) (bool, error) {
 	put := repo.redisClient.SAdd(key, value)
 	res, err := put.Result()
 	if err != nil {
-		return false, err
+		return false, errors.NewInternalErr(err)
 	}
 	if res == 1 {
 		logger.Debug("Put to set %v value %v. Success. Return %v", key, value, res)
@@ -44,7 +49,7 @@ func (repo *KeySetMapper) Remove(key string, value string) (bool, error) {
 	put := repo.redisClient.SRem(key, value)
 	res, err := put.Result()
 	if err != nil {
-		return false, err
+		return false, errors.NewInternalErr(err)
 	}
 	if res == 1 {
 		logger.Debug("Remove from set %v value %v. Success. Return %v", key, value, res)
