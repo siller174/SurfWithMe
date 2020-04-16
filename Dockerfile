@@ -15,7 +15,7 @@ FROM		golang:1.13-alpine3.10
 WORKDIR     /opt/
 
 COPY        --from=build /meetingbuild/bin/meetingHelper /opt/
-COPY        --from=build /npsbuild/configs/meetingHelper/meetingHelper.properties /opt
+COPY        --from=build /meetingbuild/configs/meetingHelper/meetingHelper.properties /opt
 
 ENTRYPOINT ["./opt/meetingHelper --c"]
 
