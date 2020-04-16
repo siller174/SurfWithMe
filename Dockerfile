@@ -8,7 +8,7 @@ ADD         . /meetingbuild
 
 RUN         apk update && apk add --no-cache git
 
-RUN         go install -v /meetingbuild/cmd/...
+RUN         go install -mod=vendor /meetingbuild/cmd/...
 
 FROM		golang:1.13-alpine3.10
 
