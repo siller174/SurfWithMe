@@ -1,17 +1,15 @@
 FROM        golang:1.13-alpine3.10 as build
 
-WORKDIR     /meetingHelper
+WORKDIR     /meetingHelperbuild
 
-ENV         GOBIN=/meetingHelper
+ENV         GOBIN=/meetingHelperbuild/bin
+
+ADD         . /meetingHelperbuild
 
 RUN         apk update && apk add --no-cache git
 
-COPY        /configs/meetingHelper .
+RUN         go install -mod=vendor /meetingHelperbuild/cmd/...
 
-ADD         . .
-
-RUN         go install -mod=vendor /meetingHelper/cmd/...
-
-ENTRYPOINT  ["./meetingHelper"]
+ENTRYPOINT  ["./meetingHelperbuild/bin/meetingHelper --config-path /meetingHelperbuild/configs/meetingHelper/meetingHelper.properties"]
 
 EXPOSE      8080
