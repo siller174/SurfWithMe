@@ -937,3 +937,15 @@ $15
 disable_session
 $8
 qqu9otcg
+*2
+$6
+SELECT
+$1
+0
+*3
+$4
+sadd
+$14
+active_session
+$8
+sgucldng
