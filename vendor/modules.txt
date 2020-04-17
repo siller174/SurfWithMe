@@ -10,6 +10,8 @@ github.com/go-redis/redis/internal/proto
 github.com/go-redis/redis/internal/util
 # github.com/gorilla/context v1.1.1
 github.com/gorilla/context
+# github.com/gorilla/handlers v1.4.2
+github.com/gorilla/handlers
 # github.com/gorilla/mux v1.7.4
 github.com/gorilla/mux
 # github.com/gorilla/schema v1.1.0

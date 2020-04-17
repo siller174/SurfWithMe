@@ -6,7 +6,7 @@ require (
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/gorilla/context v1.1.1
-	github.com/gorilla/handlers v1.4.2 // indirect
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/schema v1.1.0
 	github.com/onsi/ginkgo v1.10.1 // indirect
