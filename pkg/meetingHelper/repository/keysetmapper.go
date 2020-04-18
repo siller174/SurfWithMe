@@ -17,23 +17,23 @@ func NewKeySetMapper(client *redis.Client) *KeySetMapper {
 }
 
 func (repo *KeySetMapper) IsMember(key string, value string) (bool, error) {
-	res := repo.redisClient.SIsMember(key, value)
-	isMember, err := res.Result()
+	request := repo.redisClient.SIsMember(key, value)
+	res, err := request.Result()
 	if err != nil {
 		return false, errors.NewInternalErr(err)
 	}
-	if isMember {
+	if res {
 		logger.Debug("Set %v contain %v.", key, value)
 	} else {
 		logger.Debug("Set %v is not contain %v.", key, value)
 	}
-	return isMember, nil
+	return res, nil
 }
 
 func (repo *KeySetMapper) Add(key string, value string) (bool, error) {
 	logger.Debug("Put to set %v value %v", key, value)
-	put := repo.redisClient.SAdd(key, value)
-	res, err := put.Result()
+	request := repo.redisClient.SAdd(key, value)
+	res, err := request.Result()
 	if err != nil {
 		return false, errors.NewInternalErr(err)
 	}
@@ -46,8 +46,8 @@ func (repo *KeySetMapper) Add(key string, value string) (bool, error) {
 
 func (repo *KeySetMapper) Remove(key string, value string) (bool, error) {
 	logger.Debug("Remove from set %v value %v", key, value)
-	put := repo.redisClient.SRem(key, value)
-	res, err := put.Result()
+	request := repo.redisClient.SRem(key, value)
+	res, err := request.Result()
 	if err != nil {
 		return false, errors.NewInternalErr(err)
 	}

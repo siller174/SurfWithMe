@@ -19,27 +19,27 @@ func NewKeyListMapper(client *redis.Client) *KeyListMapper {
 
 func (repo *KeyListMapper) Put(key string, value string) error {
 	logger.Debug("Put key %v value %v", key, value)
-	put := repo.redisClient.RPush(key, value)
-	i, err := put.Result()
+	request := repo.redisClient.RPush(key, value)
+	res, err := request.Result()
 	if err != nil {
 		return errors.NewInternalErr(err)
 	}
-	logger.Debug("Put key %v value %v. Success. Return %v", key, value, i)
+	logger.Debug("Put key %v value %v. Success. Return %v", key, value, res)
 	return nil
 }
 
 func (repo *KeyListMapper) GetLast(key string) (*string, error) {
 	logger.Debug("GetLast %v", key)
-	get := repo.redisClient.LRange(key, -1, -1)
-	meetingJson, err := get.Result()
+	request := repo.redisClient.LRange(key, -1, -1)
+	res, err := request.Result()
 	if err != nil {
 		return nil, errors.NewInternalErr(err)
 	}
-	if len(meetingJson) < 1 {
+	if len(res) < 1 {
 		return nil, errors.NewNotFound(fmt.Errorf("get values from %v not found", key))
 	}
-	logger.Debug("GetLast key %v. Success. Return %v", key, meetingJson)
-	return &meetingJson[0], nil
+	logger.Debug("GetLast key %v. Success. Return %v", key, res)
+	return &res[0], nil
 }
 
 func (repo *KeyListMapper) GetAll(key string) (*[]string, error) {
