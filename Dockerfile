@@ -12,11 +12,11 @@ RUN         go install -mod=vendor /meetingbuild/cmd/...
 
 FROM		golang:1.13-alpine3.10
 
-WORKDIR     /opt/
+WORKDIR     /opt/manager
 
-COPY        --from=build /meetingbuild/bin/meetingHelper /opt/
-COPY        --from=build /meetingbuild/configs/meetingHelper/meetingHelper.properties /opt
+COPY        --from=build /meetingbuild/bin/meetingHelper /opt/manager
+COPY        --from=build /meetingbuild/configs/meetingHelper/meetingHelper.properties /opt/manager
 
-ENTRYPOINT ["/opt/meetingHelper"]
+ENTRYPOINT ["/opt/manager/meetingHelper"]
 
 EXPOSE      8080
