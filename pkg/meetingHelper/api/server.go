@@ -43,6 +43,6 @@ func initRouters(config config.App) *mux.Router {
 	router.HandleFunc(meeting.RouteDelete, meetingApi.Delete()).Methods(http.MethodDelete)
 	router.HandleFunc(meeting.RouteHistory, meetingApi.History()).Methods(http.MethodGet)
 	router.HandleFunc(meeting.RouteOptions, meetingApi.IsMember()).Methods(http.MethodOptions)
-	router.Use(middleware.MiddleWare)
+	router.Use(AddCors,middleware.MiddleWare)
 	return router
 }
