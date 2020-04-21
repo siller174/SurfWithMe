@@ -8,7 +8,7 @@ import (
 type HTTPError interface {
 	Error() string
 	GetStatus() int
-	ToResponse() string
+	ToResponse(bool) string
 }
 
 type Errors struct {
@@ -24,8 +24,13 @@ func (err *Errors) GetStatus() int {
 	return err.Status
 }
 
-func (err *Errors) ToResponse() string {
-	return fmt.Sprintf("{\nError:\"%s\"\n}", err.Err.Error())
+func (err *Errors) ToResponse(addErr bool) string {
+	if addErr {
+		return fmt.Sprintf("{\nError:\"%s\"\n}", err.Err.Error())
+	} else {
+		return fmt.Sprintf("{\nError:\"Something was wrong\"\n}")
+
+	}
 }
 
 func NewBadRequest(err error) *Errors {

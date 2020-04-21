@@ -3,10 +3,11 @@ package api
 import (
 	"encoding/json"
 	"github.com/gorilla/context"
+	"github.com/siller174/meetingHelper/pkg/common"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/api/meeting"
-	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
+	"github.com/siller174/meetingHelper/pkg/utils/http/errors"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"
 	"github.com/siller174/meetingHelper/pkg/utils/http/response"
 	"net/http"
@@ -15,11 +16,11 @@ import (
 )
 
 type MeetingMiddleWare struct {
-	service *service.MeetingService
+	service *common.MeetingService
 	errorHandler *handler.Handler
 }
 
-func newMeetingMiddleWare(service *service.MeetingService, errorHandler *handler.Handler) *MeetingMiddleWare {
+func newMeetingMiddleWare(service *common.MeetingService, errorHandler *handler.Handler) *MeetingMiddleWare {
 	return &MeetingMiddleWare{
 		service: service,
 		errorHandler: errorHandler,
@@ -35,7 +36,7 @@ func (meetingMiddleWare *MeetingMiddleWare) MiddleWare(next http.Handler) http.H
 		if uri != meeting.RouteCreate {
 			mtg, err := decodeMeeting(r)
 			if err != nil {
-				meetingMiddleWare.errorHandler.Handle(w, err)
+				meetingMiddleWare.errorHandler.Handle(w, errors.NewBadRequest(err))
 				return
 			}
 			isMem, err := isMember(meetingMiddleWare.service, mtg)
@@ -64,7 +65,7 @@ func decodeMeeting(r *http.Request) (*structs.Meeting, error) {
 	return &mtg, nil
 }
 
-func isMember(service *service.MeetingService, meeting *structs.Meeting) (bool, error) {
+func isMember(service *common.MeetingService, meeting *structs.Meeting) (bool, error) {
 	isMember, err := service.IsMember(meeting)
 	if err != nil {
 		return false, err

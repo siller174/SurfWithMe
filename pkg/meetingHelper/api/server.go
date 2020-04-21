@@ -1,17 +1,16 @@
 package api
 
 import (
+	"github.com/siller174/meetingHelper/pkg/common/repository"
+	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 	"net/http"
 
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/api/meeting"
-	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"
 
 	"github.com/gorilla/mux"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/api/manage"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/config"
-	"github.com/siller174/meetingHelper/pkg/meetingHelper/repository"
-	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 )
 
 func New(appConfig config.App) *http.Server {
@@ -34,9 +33,10 @@ func initRouters(config config.App) *mux.Router {
 	errorHandler := handler.NewHandler(config.DevMode)
 	middleware := newMeetingMiddleWare(meetingService, errorHandler)
 	meetingApi := meeting.NewMeetingApi(meetingService, errorHandler)
+	healthApi := manage.NewHealthApi(redis)
 
 	router := mux.NewRouter()
-	router.HandleFunc(manage.HealthRoute, manage.HealthApi(structs.Health{RedisClient: redis})).Methods(http.MethodGet)
+	router.HandleFunc(manage.HealthRoute, healthApi.Handle()).Methods(http.MethodGet)
 	router.HandleFunc(meeting.RouteCreate, meetingApi.Create()).Methods(http.MethodPost)
 	router.HandleFunc(meeting.RouteGet, meetingApi.Get()).Methods(http.MethodGet)
 	router.HandleFunc(meeting.RoutePut, meetingApi.Put()).Methods(http.MethodPut)

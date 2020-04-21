@@ -28,19 +28,16 @@ func (handler *Handler) Handle(w http.ResponseWriter, err error) {
 	switch typeError := err.(type) {
 	case errors.HTTPError:
 		status = typeError.GetStatus()
-		res = typeError.ToResponse()
+		res = typeError.ToResponse(handler.devMode)
 	default:
 		defErr := errors.NewInternalErr(err)
-		res = defErr.ToResponse()
+		res = defErr.ToResponse(handler.devMode)
 		status = defErr.Status
 	}
+
 	logger.Error(err.Error())
-
-	if handler.devMode {
-		innerErr = response.WriteJSON(w, status, []byte(res))
-
-		if innerErr != nil {
-			logger.Error(err.Error())
-		}
+	innerErr = response.WriteJSON(w, status, []byte(res))
+	if innerErr != nil {
+		logger.Error(err.Error())
 	}
 }
