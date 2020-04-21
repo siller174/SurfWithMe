@@ -26,9 +26,17 @@ func WriteJSON(w http.ResponseWriter, code int, message []byte) error {
 }
 
 func Empty(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD")
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0") // TODO CHECK
+	w.Header().Set("Vary", "Accept-Encoding") // TODO CHECK
 	w.WriteHeader(http.StatusNoContent)
 }
 
 func NotFound(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD")
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0") // TODO CHECK
+	w.Header().Set("Vary", "Accept-Encoding") // TODO CHECK
 	w.WriteHeader(http.StatusNotFound)
 }
