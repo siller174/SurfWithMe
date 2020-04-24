@@ -1,10 +1,9 @@
 package api
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/siller174/meetingHelper/pkg/common/repository"
-	"github.com/siller174/meetingHelper/pkg/meetingHelper/config"
 	"net/http"
+
+	"github.com/siller174/meetingHelper/pkg/meetingHelper/config"
 )
 
 func New(appConfig config.App) *http.Server {
@@ -19,9 +18,9 @@ func New(appConfig config.App) *http.Server {
 	return &srv
 }
 
-func initRouters(config config.App) *mux.Router {
-	redis := repository.New(config.Redis)
-	keyList := repository.NewKeyListMapper(redis)
-	keySet := repository.NewKeySetMapper(redis)
+// func initRouters(config config.App) *mux.Router {
+// 	redis := repository.New(config.Redis)
+// 	keyList := repository.NewKeyListMapper(redis)
+// 	keySet := repository.NewKeySetMapper(redis)
 
-}
+// }

@@ -28,6 +28,14 @@ func (repo *KeyListMapper) Put(key string, value string) error {
 	return nil
 }
 
+func (repo *KeyListMapper) Subscribe(key string) <-chan *redis.Message {
+	logger.Debug("Subscribe on key", key)
+	request := repo.redisClient.Subscribe(key)
+	channel := request.Channel()
+	logger.Debug("Subscribe on key %v. Success.")
+	return channel
+}
+
 func (repo *KeyListMapper) GetLast(key string) (*string, error) {
 	logger.Debug("GetLast %v", key)
 	request := repo.redisClient.LRange(key, -1, -1)

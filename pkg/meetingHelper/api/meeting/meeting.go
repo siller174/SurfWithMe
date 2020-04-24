@@ -1,15 +1,16 @@
 package meeting
 
 import (
+	"net/http"
+
 	"github.com/gorilla/context"
-	"github.com/siller174/meetingHelper/pkg/common"
 	"github.com/siller174/meetingHelper/pkg/logger"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper"
+	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
 	"github.com/siller174/meetingHelper/pkg/utils/converter"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"
 	"github.com/siller174/meetingHelper/pkg/utils/http/response"
-	"net/http"
 )
 
 const api = "/api/v1/meeting"
@@ -21,11 +22,11 @@ const RouteDelete = api
 const RouteOptions = api
 
 type Meeting struct {
-	service      *common.MeetingService
+	service      *service.MeetingService
 	errorHandler *handler.Handler
 }
 
-func NewMeetingApi(service *common.MeetingService, errorHandler *handler.Handler) *Meeting {
+func NewMeetingApi(service *service.MeetingService, errorHandler *handler.Handler) *Meeting {
 	return &Meeting{
 		service:      service,
 		errorHandler: errorHandler,

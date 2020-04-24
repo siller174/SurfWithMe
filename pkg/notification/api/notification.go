@@ -2,9 +2,11 @@ package api
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/siller174/meetingHelper/pkg/logger"
+	"github.com/siller174/meetingHelper/pkg/notification/service"
 	"log"
 	"net/http"
-	"github.com/gorilla/websocket"
 	"time"
 )
 
@@ -19,23 +21,26 @@ const (
 	pingPeriod = 2 * time.Second
 )
 
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	ws, err := upgrader.Upgrade(w, r, nil)
+type NotificationHandler struct {
+	notificationManager *service.NotificationManager
+}
+
+func (notificationHandler *NotificationHandler) Subscribe(w http.ResponseWriter, r *http.Request) {
+	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
-			log.Println(err)
+			logger.Error("Could not create websocket. Error %v", err)
 		}
 		return
 	}
 
-	go writer(ws)
-	reader(ws)
+	go writer(connection)
+	reader(connection)
 }
 
 func reader(ws *websocket.Conn) {
@@ -67,11 +72,10 @@ func writer(ws *websocket.Conn) {
 			ws.WriteMessage(websocket.TextMessage, []byte(`{"status": "UP"}`))
 		case <-pingTicker.C:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := ws.WriteMessage(websocket.PingMessage,  []byte("ping")); err != nil {
+			if err := ws.WriteMessage(websocket.PingMessage, []byte("ping")); err != nil {
 				log.Println(err)
 				return
 			}
 		}
 	}
 }
-

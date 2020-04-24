@@ -2,27 +2,28 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gorilla/context"
-	"github.com/siller174/meetingHelper/pkg/common"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/api/meeting"
+	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"
 	"github.com/siller174/meetingHelper/pkg/utils/http/response"
-	"net/http"
 
 	"github.com/siller174/meetingHelper/pkg/logger"
 )
 
 type MeetingMiddleWare struct {
-	service *common.MeetingService
+	service      *service.MeetingService
 	errorHandler *handler.Handler
 }
 
-func newMeetingMiddleWare(service *common.MeetingService, errorHandler *handler.Handler) *MeetingMiddleWare {
+func newMeetingMiddleWare(service *service.MeetingService, errorHandler *handler.Handler) *MeetingMiddleWare {
 	return &MeetingMiddleWare{
-		service: service,
+		service:      service,
 		errorHandler: errorHandler,
 	}
 }
@@ -65,7 +66,7 @@ func decodeMeeting(r *http.Request) (*structs.Meeting, error) {
 	return &mtg, nil
 }
 
-func isMember(service *common.MeetingService, meeting *structs.Meeting) (bool, error) {
+func isMember(service *service.MeetingService, meeting *structs.Meeting) (bool, error) {
 	isMember, err := service.IsMember(meeting)
 	if err != nil {
 		return false, err
