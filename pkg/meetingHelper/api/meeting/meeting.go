@@ -15,7 +15,7 @@ import (
 
 const api = "/api/v1/meeting"
 const RouteCreate = api + "/create"
-const RouteGet = api
+const RoutePost = api
 const RoutePut = api
 const RouteHistory = api + "/history"
 const RouteDelete = api
@@ -46,7 +46,7 @@ func (meeting *Meeting) Create() func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (meeting *Meeting) Get() func(w http.ResponseWriter, r *http.Request) {
+func (meeting *Meeting) Post() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		mtg := getMeeting(r)
