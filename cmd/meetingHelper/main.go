@@ -12,5 +12,5 @@ func main() {
 	pflag.Parse()
 	appConfig := config.New(*configPath)
 	server := api.New(appConfig)
-	logger.Fatal("App was close", server.ListenAndServe())
+	logger.Fatal("App was close", server.ListenAndServeTLS("poom.live.csr", "poom.live.key"))
 }
