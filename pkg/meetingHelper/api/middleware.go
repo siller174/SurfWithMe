@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/context"
@@ -58,9 +59,14 @@ func (meetingMiddleWare *MeetingMiddleWare) MiddleWare(next http.Handler) http.H
 
 func decodeMeeting(r *http.Request) (*structs.Meeting, error) {
 	var mtg structs.Meeting
-	err := json.NewDecoder(r.Body).Decode(&mtg)
+	bodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logger.Warn("Could not decode meeting")
+		logger.Warn("Could not get body from request")
+		return nil, err
+	}
+	err = json.Unmarshal(bodyBytes, &mtg)
+	if err != nil {
+		logger.Warn("Could not decode meeting. Body %v", string(bodyBytes))
 		return nil, err
 	}
 	return &mtg, nil

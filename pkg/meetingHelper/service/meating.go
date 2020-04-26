@@ -7,6 +7,7 @@ import (
 	"github.com/siller174/meetingHelper/pkg/logger"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
 	"github.com/siller174/meetingHelper/pkg/utils/converter"
+	"strings"
 )
 
 const activeSession = "active_session"
@@ -109,5 +110,6 @@ func (ms *MeetingService) Delete(meeting *structs.Meeting) error {
 
 func generateID() string {
 	guid := xid.New()
-	return string(guid.String()[12:])
+	return strings.ToUpper(string(guid.String()[14:]))
+
 }

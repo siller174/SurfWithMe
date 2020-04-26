@@ -39,9 +39,7 @@ func initRouters(config config.App) *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc(manage.HealthRoute, healthApi.Handle()).Methods(http.MethodGet)
 	router.HandleFunc(meeting.RouteCreate, meetingApi.Create()).Methods(http.MethodPost)
-
 	router.HandleFunc(meeting.RoutePost, meetingApi.Post()).Methods(http.MethodPost)
-
 	router.HandleFunc(meeting.RoutePut, meetingApi.Put()).Methods(http.MethodPut)
 	router.HandleFunc(meeting.RouteDelete, meetingApi.Delete()).Methods(http.MethodDelete)
 	router.HandleFunc(meeting.RouteHistory, meetingApi.History()).Methods(http.MethodGet)

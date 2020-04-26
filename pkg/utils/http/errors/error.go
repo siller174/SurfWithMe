@@ -53,3 +53,10 @@ func NewNotFound(err error) *Errors {
 		Status: http.StatusNotFound,
 	}
 }
+
+func NewEmptyResp(err error) *Errors {
+	return &Errors{
+		Err:    err,
+		Status: http.StatusNoContent,
+	}
+}

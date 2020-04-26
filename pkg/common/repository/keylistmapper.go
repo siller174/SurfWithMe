@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+
 	"github.com/go-redis/redis"
 	"github.com/siller174/meetingHelper/pkg/logger"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors"
@@ -44,7 +45,7 @@ func (repo *KeyListMapper) GetLast(key string) (*string, error) {
 		return nil, errors.NewInternalErr(err)
 	}
 	if len(res) < 1 {
-		return nil, errors.NewNotFound(fmt.Errorf("get values from %v not found", key))
+		return nil, errors.NewEmptyResp(fmt.Errorf("get values from %v not found", key))
 	}
 	logger.Debug("GetLast key %v. Success. Return %v", key, res)
 	return &res[0], nil

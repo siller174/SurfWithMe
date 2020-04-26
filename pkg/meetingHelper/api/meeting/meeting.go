@@ -55,7 +55,7 @@ func (meeting *Meeting) Post() func(w http.ResponseWriter, r *http.Request) {
 			meeting.errorHandler.Handle(w, err)
 			return
 		}
-		logger.Debug("Get %v+", mtg)
+		logger.Debug("Get %+v", mtg)
 		writeMeetingResponse(w, r, *mtg)
 	}
 }
@@ -70,7 +70,7 @@ func (meeting *Meeting) Put() func(w http.ResponseWriter, r *http.Request) {
 			meeting.errorHandler.Handle(w, err)
 			return
 		}
-		logger.Debug("Put %v+", mtg)
+		logger.Debug("Put %+v", mtg)
 		response.Empty(w)
 	}
 }
@@ -108,7 +108,7 @@ func (meeting *Meeting) Delete() func(w http.ResponseWriter, r *http.Request) {
 			meeting.errorHandler.Handle(w, err)
 			return
 		}
-		logger.Debug("Delete %v+", mtg)
+		logger.Debug("Delete %+v", mtg)
 		response.Empty(w)
 	}
 }
