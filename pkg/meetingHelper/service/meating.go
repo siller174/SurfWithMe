@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/rs/xid"
-	"github.com/siller174/meetingHelper/pkg/common/repository"
 	"github.com/siller174/meetingHelper/pkg/logger"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
+	"github.com/siller174/meetingHelper/pkg/repository"
 	"github.com/siller174/meetingHelper/pkg/utils/converter"
 )
 

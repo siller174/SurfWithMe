@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/siller174/meetingHelper/pkg/common/repository"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/service"
+	"github.com/siller174/meetingHelper/pkg/repository"
 
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/api/meeting"
 	"github.com/siller174/meetingHelper/pkg/utils/http/errors/handler"

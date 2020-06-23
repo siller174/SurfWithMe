@@ -14,8 +14,6 @@ github.com/gorilla/context
 github.com/gorilla/mux
 # github.com/gorilla/schema v1.1.0
 github.com/gorilla/schema
-# github.com/gorilla/websocket v1.4.2
-github.com/gorilla/websocket
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast
