@@ -1,4 +1,4 @@
-# Meeting Helper (Surf with me)
+# Surf with me
 Stream screen in skype or zoom is not cool! But How to choosing something in the internet without stream screen?
 Need to stream links from browser to browser!
 
