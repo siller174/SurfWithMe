@@ -2,23 +2,24 @@ package service
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/rs/xid"
-	repository2 "github.com/siller174/meetingHelper/pkg/common/repository"
+	"github.com/siller174/meetingHelper/pkg/common/repository"
 	"github.com/siller174/meetingHelper/pkg/logger"
 	"github.com/siller174/meetingHelper/pkg/meetingHelper/structs"
 	"github.com/siller174/meetingHelper/pkg/utils/converter"
-	"strings"
 )
 
 const activeSession = "active_session"
 const disabeSession = "disable_session"
 
 type MeetingService struct {
-	keyList *repository2.KeyListMapper
-	keySet  *repository2.KeySetMapper
+	keyList *repository.KeyListMapper
+	keySet  *repository.KeySetMapper
 }
 
-func NewMeetingService(keyList *repository2.KeyListMapper, keySet *repository2.KeySetMapper) *MeetingService {
+func NewMeetingService(keyList *repository.KeyListMapper, keySet *repository.KeySetMapper) *MeetingService {
 	return &MeetingService{
 		keyList: keyList,
 		keySet:  keySet,
